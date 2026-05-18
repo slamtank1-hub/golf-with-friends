@@ -19,7 +19,7 @@ window.GOLF_GROUPS["kimjang-bond"] = {
       },
       cover: {
         subtitle: "오크밸리CC",
-        image: null,
+        image: "data/groups/kimjan-bond_titie.png",
         imageSlotLabel: "모임 참석 이미지"
       },
       rounds: [

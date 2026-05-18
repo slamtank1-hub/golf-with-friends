@@ -1,4 +1,4 @@
-﻿window.GOLF_VENUES = window.GOLF_VENUES || {};
+window.GOLF_VENUES = window.GOLF_VENUES || {};
 const OAKVALLEY_HOLE_DEFAULTS = [
   { no: 1, par: "확인 예정", white: "확인 예정", mood: "코스도 · 경사도 · 그린", elevation: "경사 이미지 확인", landing: "첫 홀은 리듬 우선, 페어웨이 중앙을 넓게 보기", target: "티샷은 페어웨이 중앙. 무리한 장타보다 다음 샷이 보이는 위치.", danger: "초반 무리, 좌우 큰 미스", safe: "중앙 랜딩, 그린 중앙", green: "그린 이미지를 보고 높은 쪽과 낮은 쪽을 먼저 확인." },
   { no: 2, par: "확인 예정", white: "확인 예정", mood: "전장 확인 · 랜딩존 · 세컨 위치", elevation: "경사 이미지 확인", landing: "랜딩존을 넓게 보고 세컨이 편한 쪽으로", target: "티샷은 안전한 페어웨이. 세컨 욕심보다 다음 거리 남기기.", danger: "무리한 세컨, 긴 러프", safe: "3온 전략, 보기 방어", green: "핀보다 그린 중앙을 먼저 보고 퍼트 방향을 결정." },
@@ -15,6 +15,7 @@ function oakvalleyHoleData(courseKey, folder, prefix) {
   return OAKVALLEY_HOLE_DEFAULTS.map(item => ({
     ...item,
     id: `oakvalley.${courseKey}.${String(item.no).padStart(2, "0")}`,
+    summaryImage: `assets/oakvalley/${folder}/${prefix}summary_hole${item.no}.png`,
     assets: {
       course: `assets/oakvalley/${folder}/${prefix}course_hole${item.no}.png`,
       slope: `assets/oakvalley/${folder}/${prefix}slope_hole${item.no}.png`,
@@ -40,7 +41,7 @@ window.GOLF_VENUES.oakvalley = {
       style: "연못과 계류가 많은 편으로 알려진 전략형 코스",
       watch: "티샷보다 세컨샷 위치가 중요. 물과 숲을 동시에 의식하면 스윙이 급해짐.",
       play: "첫 라운드 시작 코스로 가정하고, 보기 전략과 페어웨이 우선 운영.",
-      note: "이미지 준비 전이라 홀별 화면은 브리핑 중심으로 구성",
+      note: "종합, 코스도, 경사도, 그린 이미지를 홀별로 제공",
       holesData: oakvalleyHoleData("pine", "fine", "pine")
     },
     maple: {
@@ -55,7 +56,7 @@ window.GOLF_VENUES.oakvalley = {
       style: "오크와 함께 대회 코스로 쓰인 이력이 있는 18홀 조합의 한 축",
       watch: "오후 라운드라 체력 저하와 집중력 하락 주의. 무리한 장타보다 반복 가능한 방향.",
       play: "티샷 루틴을 짧게 고정하고, 그린 중앙 공략으로 더블 보기 방지.",
-      note: "이미지 준비 전이라 코스 브리핑과 홀 체크리스트 중심",
+      note: "종합, 코스도, 경사도, 그린 이미지를 홀별로 제공",
       holesData: oakvalleyHoleData("maple", "maple", "maple")
     },
     oak: {
@@ -257,7 +258,7 @@ window.GOLF_VENUES.oakvalley = {
       style: "리노베이션 이후 랜딩 에어리어가 넓어졌다는 공개 설명이 있음",
       watch: "마지막 코스라 체력과 멘탈이 변수. 넓어 보여도 위험 구역 앞에서는 끊어가기.",
       play: "좋은 스코어보다 큰 사고 없는 마무리. 물, 벙커, 숲 중 하나만 확실히 피하기.",
-      note: "이미지 준비 전이라 코스 브리핑과 홀 체크리스트 중심",
+      note: "종합, 코스도, 경사도, 그린 이미지를 홀별로 제공",
       holesData: oakvalleyHoleData("cherry", "cherry", "cherry")
     }
   }

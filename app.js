@@ -2,6 +2,9 @@ const deck = document.getElementById("deck");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const currentChip = document.getElementById("currentChip");
+const imageModal = document.getElementById("imageModal");
+const imageModalImg = document.getElementById("imageModalImg");
+const imageModalClose = document.getElementById("imageModalClose");
 
 const genericHoleThemes = [
   "출발 홀 · 티샷 리듬 만들기",
@@ -162,9 +165,6 @@ function itinerarySlide() {
             <div class="promise-grid">
               ${scheduleRows().map(row => `<div class="promise"><span class="number-mark">${escapeHtml(row.date.replace(".", ""))}</span><span>${escapeHtml(row.date)} · ${escapeHtml(row.labels.join(" → "))} · ${escapeHtml(row.notes.join(" / "))}</span></div>`).join("")}
             </div>
-            <div class="course-actions">
-              ${courseList().map(course => `<button class="course-btn" type="button" data-course="${escapeHtml(course.key)}">${escapeHtml(course.name)} 코스</button>`).join("")}
-            </div>
           </div>
         </div>
       </div>
@@ -194,14 +194,12 @@ function topbar(active) {
 
 function courseSlide(courseKey) {
   const info = courseByKey(courseKey);
-  const round = roundByCourse(courseKey);
   return `
     <article class="slide">
       ${topbar(info.name)}
       <section class="hole-head">
         <div class="hole-main">
           <div>
-            <p class="hole-kicker">${escapeHtml(round?.displayDate || "")}</p>
             <h2 class="hole-title">${escapeHtml(info.name)} 코스</h2>
           </div>
           <span class="pill">난이도 ${escapeHtml(info.difficulty)}</span>
@@ -270,24 +268,6 @@ function assetHoleSlide(courseKey, hole) {
           </div>
           <span class="pill">WHITE ${escapeHtml(hole.white)}</span>
         </div>
-        <div class="meta-row">
-          ${hole.mood.split(" · ").map(item => `<span class="pill">${escapeHtml(item)}</span>`).join("")}
-        </div>
-      </section>
-
-      <section class="quick-card">
-        <p class="quick-label">오늘의 공략</p>
-        <p class="quick-text">${escapeHtml(hole.target)}</p>
-        <div class="danger-row">
-          <div class="danger">
-            <span class="box-label">절대 금지</span>
-            <p class="box-value">${escapeHtml(hole.danger)}</p>
-          </div>
-          <div class="safe">
-            <span class="box-label">안전 선택</span>
-            <p class="box-value">${escapeHtml(hole.safe)}</p>
-          </div>
-        </div>
       </section>
 
       <div class="media-tabs" role="tablist" aria-label="이미지 종류">
@@ -296,7 +276,7 @@ function assetHoleSlide(courseKey, hole) {
         <button class="tab ${activeTab === "slope" ? "active" : ""}" type="button" data-tab="${hole.id}:slope">경사</button>
         <button class="tab ${activeTab === "green" ? "active" : ""}" type="button" data-tab="${hole.id}:green">그린</button>
       </div>
-      <figure class="image-panel">
+      <figure class="image-panel ${activeTab === "summary" ? "summary" : ""}" data-full-image="${escapeHtml(img)}">
         <img src="${escapeHtml(img)}" alt="${escapeHtml(course.name)}코스 ${hole.no}번홀 ${caption}" loading="lazy">
         <figcaption class="image-caption">${escapeHtml(caption)}</figcaption>
       </figure>
@@ -308,6 +288,8 @@ function assetHoleSlide(courseKey, hole) {
         </div>
         <div class="tips">
           <div class="tip"><b>티샷</b><span>${escapeHtml(hole.target)}</span></div>
+          <div class="tip"><b>주의</b><span>${escapeHtml(hole.danger)}</span></div>
+          <div class="tip"><b>안전</b><span>${escapeHtml(hole.safe)}</span></div>
           <div class="tip"><b>고도</b><span>${escapeHtml(hole.elevation)}. 클럽 선택은 평지 거리보다 보수적으로.</span></div>
           <div class="tip"><b>그린</b><span>${escapeHtml(hole.green)}</span></div>
         </div>
@@ -315,11 +297,10 @@ function assetHoleSlide(courseKey, hole) {
 
       <section class="panel">
         <div class="panel-title">
-          <h3>친구 전용 멘트</h3>
-          <span class="pill">보기면 충분</span>
+          <h3>이 홀에서 명심할 말</h3>
         </div>
         <div class="friends">
-          ${messages.map(item => `<div class="friend"><b>${escapeHtml(item.label)}</b><span>${escapeHtml(item.text)}</span></div>`).join("")}
+          ${messages.map(item => `<div class="friend"><span>${escapeHtml(typeof item === "string" ? item : item.text)}</span></div>`).join("")}
         </div>
       </section>
     </article>
@@ -346,18 +327,14 @@ function genericHoleSlide(courseKey, holeNo) {
         </div>
       </section>
 
-      <section class="quick-card">
-        <p class="quick-label">기본 공략</p>
-        <p class="quick-text">${escapeHtml(info.play)}</p>
-        <div class="danger-row">
-          <div class="danger">
-            <span class="box-label">주의</span>
-            <p class="box-value">${escapeHtml(info.watch)}</p>
-          </div>
-          <div class="safe">
-            <span class="box-label">안전 선택</span>
-            <p class="box-value">티샷은 페어웨이, 세컨은 다음 샷이 편한 곳, 그린은 중앙.</p>
-          </div>
+      <section class="panel">
+        <div class="panel-title">
+          <h3>공략 메모</h3>
+        </div>
+        <div class="tips">
+          <div class="tip"><b>운영</b><span>${escapeHtml(info.play)}</span></div>
+          <div class="tip"><b>주의</b><span>${escapeHtml(info.watch)}</span></div>
+          <div class="tip"><b>안전</b><span>티샷은 페어웨이, 세컨은 다음 샷이 편한 곳, 그린은 중앙.</span></div>
         </div>
       </section>
 
@@ -370,12 +347,11 @@ function genericHoleSlide(courseKey, holeNo) {
 
       <section class="panel">
         <div class="panel-title">
-          <h3>친구 전용 멘트</h3>
-          <span class="pill">큰 사고 방지</span>
+          <h3>이 홀에서 명심할 말</h3>
         </div>
         <div class="friends">
-          <div class="friend"><b>카트 안 조언</b><span>이 홀은 멋있게보다 멀쩡하게. 다음 샷이 보이면 성공.</span></div>
-          <div class="friend"><b>오늘의 한마디</b><span>스코어는 나중에 세고, 지금은 위험 구역 하나만 확실히 피하자.</span></div>
+          <div class="friend"><span>이 홀은 멋있게보다 멀쩡하게. 다음 샷이 보이면 성공.</span></div>
+          <div class="friend"><span>스코어는 나중에 세고, 지금은 위험 구역 하나만 확실히 피하자.</span></div>
         </div>
       </section>
     </article>
@@ -466,12 +442,37 @@ function render() {
       render();
     });
   });
+  document.querySelectorAll("[data-full-image]").forEach(panel => {
+    panel.addEventListener("click", () => {
+      const img = panel.querySelector("img");
+      openImageModal(panel.dataset.fullImage, img?.alt);
+    });
+  });
 }
 
+function openImageModal(src, alt) {
+  if (!imageModal || !imageModalImg || !src) return;
+  imageModalImg.src = src;
+  imageModalImg.alt = alt || "확대 이미지";
+  imageModal.classList.add("open");
+  imageModal.setAttribute("aria-hidden", "false");
+}
+
+function closeImageModal() {
+  if (!imageModal || !imageModalImg) return;
+  imageModal.classList.remove("open");
+  imageModal.setAttribute("aria-hidden", "true");
+  imageModalImg.removeAttribute("src");
+}
 function go(next) {
   current = Math.max(0, Math.min(slides.length - 1, next));
   render();
 }
+
+imageModalClose?.addEventListener("click", closeImageModal);
+imageModal?.addEventListener("click", event => {
+  if (event.target === imageModal) closeImageModal();
+});
 
 prevBtn.addEventListener("click", () => go(current - 1));
 nextBtn.addEventListener("click", () => go(current + 1));
@@ -494,6 +495,7 @@ deck.addEventListener("touchend", event => {
 window.addEventListener("keydown", event => {
   if (event.key === "ArrowLeft") go(current - 1);
   if (event.key === "ArrowRight") go(current + 1);
+  if (event.key === "Escape") closeImageModal();
 });
 
 async function init() {
@@ -507,7 +509,6 @@ async function init() {
     return;
   }
   try {
-    await loadScript("data/venues/oakvalley.js");
     await loadScript(`data/groups/${groupKey}.js`);
     const group = window.GOLF_GROUPS?.[groupKey];
     const trip = group?.trips?.[tripKey];
@@ -515,6 +516,7 @@ async function init() {
       showMessage("여행 정보를 찾을 수 없습니다", "공유받은 링크의 group 또는 trip 값을 확인해주세요.");
       return;
     }
+    await loadScript(`data/venues/${trip.venueId}.js`);
     const venue = window.GOLF_VENUES?.[trip.venueId];
     if (!venue) {
       showMessage("골프장 정보를 찾을 수 없습니다", "여행 데이터에 연결된 골프장 데이터가 없습니다.");
