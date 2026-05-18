@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10140f">
+  <title>김장채권 골프여행</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10140f;
+      --panel: #171d15;
+      --panel-2: #20281c;
+      --line: rgba(255,255,255,.13);
+      --text: #f5f3e8;
+      --muted: #aeb9a6;
+      --green: #9bd85d;
+      --deep-green: #315c2b;
+      --yellow: #f7c948;
+      --orange: #ff995d;
+      --red: #ff5d5d;
+      --blue: #73c8ff;
+      --shadow: 0 18px 48px rgba(0,0,0,.34);
+      --radius: 8px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(155, 216, 93, .16), transparent 34rem),
+        linear-gradient(180deg, #11170f 0%, var(--bg) 42%, #0b0f0a 100%);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(100vw, 520px);
+      height: 100dvh;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      border-inline: 1px solid rgba(255,255,255,.06);
+      background: rgba(10,14,9,.68);
+    }
+
+    .deck {
+      height: 100%;
+      display: flex;
+      transition: transform .28s ease;
+      touch-action: pan-y;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: max(14px, env(safe-area-inset-top)) 14px 92px;
+      scrollbar-width: none;
+    }
+
+    .slide::-webkit-scrollbar { display: none; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: -14px -14px 12px;
+      padding: max(9px, env(safe-area-inset-top)) 10px 8px;
+      background: linear-gradient(180deg, rgba(16,20,15,.98), rgba(16,20,15,.86));
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .course-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .course-title small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .brand-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+      background: rgba(255,255,255,.055);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .course-title strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hole-nav {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 5px;
+    }
+
+    .dot {
+      height: 34px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .dot.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #15210f;
+    }
+
+    .hero {
+      min-height: calc(100dvh - 108px);
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .hero-card,
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.045));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(155,216,93,.18), transparent 44%, rgba(115,200,255,.12));
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; }
+
+    .cover-title {
+      display: grid;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .cover-title h1 {
+      font-size: clamp(32px, 10vw, 48px);
+      line-height: 1.08;
+    }
+
+    .cover-title strong {
+      display: block;
+      color: #eaf5df;
+      font-size: 18px;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .cover-photo-slot {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      margin: 22px 0;
+      border: 1px dashed rgba(245,243,232,.38);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(155,216,93,.14), rgba(115,200,255,.1)),
+        rgba(0,0,0,.2);
+      text-align: center;
+    }
+
+    .cover-photo-slot b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .cover-photo-slot span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .cover-schedule {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .cover-row {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .cover-row b {
+      color: var(--green);
+      font-size: 13px;
+    }
+
+    .cover-row span {
+      color: #f3f0df;
+      font-size: 15px;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 0 0 12px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(34px, 11vw, 52px);
+      line-height: .96;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      margin-top: 18px;
+      color: #dfe8d6;
+      font-size: 16px;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .promise-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .promise {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      color: #ecf5e4;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .number-mark {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--green);
+      color: #16230f;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .hole-head {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hole-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .hole-kicker {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .hole-title {
+      margin-top: 3px;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .quick-card {
+      margin-top: 12px;
+      padding: 14px;
+      background: linear-gradient(135deg, rgba(155,216,93,.2), rgba(255,255,255,.055));
+      border: 1px solid rgba(155,216,93,.32);
+      border-radius: var(--radius);
+    }
+
+    .quick-label {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .quick-text {
+      margin-top: 4px;
+      font-size: 20px;
+      line-height: 1.28;
+      font-weight: 900;
+      word-break: keep-all;
+    }
+
+    .danger-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .danger,
+    .safe {
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 70px;
+    }
+
+    .danger {
+      background: rgba(255,93,93,.12);
+      border: 1px solid rgba(255,93,93,.35);
+    }
+
+    .safe {
+      background: rgba(155,216,93,.11);
+      border: 1px solid rgba(155,216,93,.28);
+    }
+
+    .box-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .box-value {
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    .media-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 14px 0 8px;
+    }
+
+    .tab {
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.055);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      background: #f2f0dc;
+      color: #1c2417;
+      border-color: #f2f0dc;
+    }
+
+    .image-panel {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #f4f4ee;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .image-panel img {
+      display: block;
+      width: 100%;
+      max-height: 58dvh;
+      object-fit: contain;
+      background: #f4f4ee;
+    }
+
+    .image-caption {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      max-width: calc(100% - 16px);
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(15,19,13,.78);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel {
+      margin-top: 12px;
+      padding: 14px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panel-title h3 {
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .tips {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tip {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 8px;
+      padding: 9px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .tip:first-child { border-top: 0; padding-top: 0; }
+
+    .tip b {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .tip span {
+      color: #e8eee0;
+      font-size: 14px;
+      line-height: 1.42;
+      word-break: keep-all;
+    }
+
+    .friends {
+      display: grid;
+      gap: 8px;
+    }
+
+    .friend {
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .friend b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--yellow);
+      font-size: 12px;
+    }
+
+    .friend span {
+      color: #f3f0df;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 46px 1fr 46px;
+      gap: 7px;
+      padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(16,20,15,0), rgba(16,20,15,.92) 22%, rgba(16,20,15,.98));
+      pointer-events: none;
+    }
+
+    .nav-btn,
+    .current-chip {
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 950;
+      pointer-events: auto;
+    }
+
+    .nav-btn {
+      font-size: 20px;
+    }
+
+    .nav-btn:disabled {
+      opacity: .35;
+    }
+
+    .current-chip {
+      display: grid;
+      place-items: center;
+      background: rgba(155,216,93,.16);
+      color: #eaf8df;
+      font-size: 13px;
+    }
+
+    .ending {
+      min-height: calc(100dvh - 112px);
+      display: grid;
+      align-content: center;
+      gap: 12px;
+    }
+
+    .ending .hero-card {
+      background: linear-gradient(180deg, rgba(247,201,72,.12), rgba(255,255,255,.05));
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .course-brief {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .brief-box {
+      min-height: 92px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      background: rgba(0,0,0,.2);
+    }
+
+    .brief-box b {
+      display: block;
+      color: var(--green);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .brief-box span {
+      color: #ecf3e6;
+      font-size: 12px;
+      line-height: 1.38;
+      word-break: keep-all;
+    }
+
+    .course-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .course-btn {
+      min-height: 32px;
+      border: 1px solid rgba(155,216,93,.28);
+      border-radius: 8px;
+      background: rgba(155,216,93,.11);
+      color: #edf8e4;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 5px;
+    }
+
+    .hole-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .hole-mini {
+      min-height: 84px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,.055);
+      text-align: left;
+    }
+
+    .hole-mini b {
+      display: block;
+      color: var(--yellow);
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .hole-mini span {
+      display: block;
+      color: #dce7d4;
+      font-size: 12px;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .placeholder-map {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background:
+        linear-gradient(155deg, rgba(155,216,93,.18), rgba(115,200,255,.11)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 10px, transparent 10px 20px),
+        #182116;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .placeholder-map b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 22px;
+      color: var(--text);
+    }
+
+    .placeholder-map span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    @media (min-width: 760px) {
+      body {
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        overflow: auto;
+      }
+
+      .app {
+        height: min(920px, calc(100vh - 48px));
+        border-radius: 18px;
+        box-shadow: 0 24px 80px rgba(0,0,0,.45);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="김장채권 골프여행">
+    <section class="deck" id="deck"></section>
+    <nav class="bottom-nav" aria-label="슬라이드 이동">
+      <button class="nav-btn" id="prevBtn" type="button" aria-label="이전">‹</button>
+      <div class="current-chip" id="currentChip">OPENING</div>
+      <button class="nav-btn" id="nextBtn" type="button" aria-label="다음">›</button>
+    </nav>
+  </main>
+
+  <script type="text/plain" id="legacy-inline-script">
+    const ASSET = "assets/oak/";
+    const itinerary = [
+      { date: "6월 4일", courses: ["Pine", "Maple"], note: "첫날은 방향성 확인과 체력 아끼기" },
+      { date: "6월 5일", courses: ["Oak", "Cherry"], note: "둘째 날은 오르막/내리막 보정과 집중력" }
+    ];
+
+    const courseInfo = {
+      Pine: {
+        ko: "파인", day: "6월 4일 오전", theme: "소나무 숲 · 물길 · 전략형",
+        difficulty: "상", style: "연못과 계류가 많은 편으로 알려진 전략형 코스",
+        watch: "티샷보다 세컨샷 위치가 중요. 물과 숲을 동시에 의식하면 스윙이 급해짐.",
+        play: "첫 라운드 시작 코스로 가정하고, 보기 전략과 페어웨이 우선 운영.",
+        note: "이미지 준비 전이라 홀별 화면은 브리핑 중심으로 구성"
+      },
+      Maple: {
+        ko: "메이플", day: "6월 4일 오후", theme: "단풍나무 · 리듬 · 체력 관리",
+        difficulty: "중상", style: "오크와 함께 대회 코스로 쓰인 이력이 있는 18홀 조합의 한 축",
+        watch: "오후 라운드라 체력 저하와 집중력 하락 주의. 무리한 장타보다 반복 가능한 방향.",
+        play: "티샷 루틴을 짧게 고정하고, 그린 중앙 공략으로 더블 보기 방지.",
+        note: "이미지 준비 전이라 코스 브리핑과 홀 체크리스트 중심"
+      },
+      Oak: {
+        ko: "오크", day: "6월 5일 오전", theme: "참나무 숲 · 고도 변화 · 정교한 보정",
+        difficulty: "상", style: "현재 이미지가 준비된 메인 야디지북 코스",
+        watch: "오르막/내리막 차이가 크게 느껴지는 홀들이 있어 평지 거리만 믿으면 위험.",
+        play: "200m 기준 랜딩존, 고도 보정, 그린 경사를 함께 확인.",
+        note: "코스도, 경사도, 그린 이미지를 홀별로 제공"
+      },
+      Cherry: {
+        ko: "체리", day: "6월 5일 오후", theme: "벚나무 · 리노베이션 · 공격과 방어",
+        difficulty: "중상", style: "리노베이션 이후 랜딩 에어리어가 넓어졌다는 공개 설명이 있음",
+        watch: "마지막 코스라 체력과 멘탈이 변수. 넓어 보여도 위험 구역 앞에서는 끊어가기.",
+        play: "좋은 스코어보다 큰 사고 없는 마무리. 물, 벙커, 숲 중 하나만 확실히 피하기.",
+        note: "이미지 준비 전이라 코스 브리핑과 홀 체크리스트 중심"
+      }
+    };
+
+    const oakHoles = [
+      {
+        no: 1, par: 4, white: "316m", mood: "오르막 · 좌측 벙커 · 우측 숲",
+        elevation: "IP +12.6m / 그린 +23.6m", landing: "200m 기준 오르막 보정, 약 190m 착지",
+        summaryImage: `${ASSET}sample_hole_01.jpg`,
+        target: "페어웨이 중앙보다 살짝 우측. 무리한 장타보다 살아있는 티샷.",
+        danger: "좌측 벙커, 우측 숲",
+        safe: "중앙 랜딩 후 한 클럽 길게",
+        green: "뒤가 높고 앞이 낮은 그린. 짧으면 굴러 내려올 수 있어 중앙 우측 추천.",
+        friends: ["첫 홀은 스코어보다 표정 관리.", "드라이버는 힘 빼고, 변명은 더 빼고."]
+      },
+      {
+        no: 2, par: 5, white: "확인 예정", mood: "큰 내리막 · 긴 홀 · 세컨 욕심 금지",
+        elevation: "IP -14m / IP -31.9m / 그린 -36m", landing: "내리막이라 평소보다 더 굴러갈 수 있음",
+        target: "티샷은 페어웨이 넓은 쪽으로. 세컨은 다음 샷 편한 거리만 남기기.",
+        danger: "과한 드로우, 내리막 과속",
+        safe: "짧아도 페어웨이 우선",
+        green: "내리막 홀은 거리감이 흔들리기 쉬움. 핀보다 그린 중앙.",
+        friends: ["여기서 투온 말 꺼내면 저녁에 증거자료로 쓴다.", "영웅샷보다 세 번째 샷이 편한 사람이 이긴다."]
+      },
+      {
+        no: 3, par: 4, white: "확인 예정", mood: "완만한 오르막 · 좌측 라인 주의",
+        elevation: "IP +3.6m / 그린 +7.5m", landing: "살짝 오르막, 평지보다 반 클럽 정도 보수적으로",
+        target: "페어웨이 중앙. 왼쪽으로 감기면 다음 샷 각도가 답답함.",
+        danger: "좌측 나무, 짧은 세컨",
+        safe: "중앙 랜딩, 그린 중앙",
+        green: "그린 주변 경사보다 퍼트 라인 착시를 조심. 안전하게 중앙 공략.",
+        friends: ["잘 맞았는데 왼쪽이면 그냥 왼쪽으로 잘 맞은 거다.", "오늘은 가운데가 제일 멋있는 방향."]
+      },
+      {
+        no: 4, par: 5, white: "확인 예정", mood: "내리막 · 긴 전장 · 리듬 유지",
+        elevation: "IP -12.5m / IP -22.6m / 그린 -20.4m", landing: "내리막 보정으로 착지 후 런을 더 계산",
+        target: "티샷은 넓은 랜딩존. 세컨은 위험 구역을 피해서 끊어가기.",
+        danger: "무리한 세컨, 좌우 숲",
+        safe: "3온 전략, 어프로치 거리 남기기",
+        green: "앞뒤 거리감이 어려운 홀. 핀 하이보다 중앙에 올리는 쪽.",
+        friends: ["파5에서 제일 위험한 말: '한 번 가볼까?'", "끊어가는 사람은 재미없어 보여도 지갑은 지킨다."]
+      },
+      {
+        no: 5, par: 3, white: "확인 예정", mood: "짧은 내리막 · 거리감 홀",
+        elevation: "그린 -2.9m", landing: "짧은 홀, 바람과 내리막만 확인",
+        target: "핀보다 안전한 그린 중앙. 벙커 방향은 과감히 제외.",
+        danger: "짧은 미스, 그린 주변 벙커",
+        safe: "중앙 크게 보고 2퍼트",
+        green: "색 차이가 큰 그린. 높은 쪽에서 낮은 쪽으로 흐름을 먼저 보기.",
+        friends: ["파3는 원온보다 다음 퍼트가 더 중요하다.", "니어 욕심은 좋은데, 일단 모래부터 피하자."]
+      },
+      {
+        no: 6, par: 4, white: "확인 예정", mood: "강한 내리막 · 런 계산 · 방향성",
+        elevation: "IP -25.8m / 그린 -36.4m", landing: "내리막이 커서 평소보다 멀리 도망갈 수 있음",
+        target: "짧게 잡아도 충분. 페어웨이 중앙 라인만 지키기.",
+        danger: "오버 런, 좌우 미스",
+        safe: "클럽 선택 보수적으로",
+        green: "내리막 접근은 캐리보다 착지 지점이 중요. 앞쪽에 세우려 하지 말기.",
+        friends: ["내리막이라고 세게 치면 공이 먼저 여행 간다.", "오늘의 기술샷: 욕심을 줄이는 샷."]
+      },
+      {
+        no: 7, par: 3, white: "확인 예정", mood: "내리막 파3 · 클럽 선택",
+        elevation: "그린 -23.3m", landing: "큰 내리막, 한 클럽 이상 짧게 볼 수 있음",
+        target: "핀 위치보다 그린 넓은 면. 짧은 쪽 미스만 피하기.",
+        danger: "긴 미스, 바람 오판",
+        safe: "중앙 착지 후 2퍼트",
+        green: "그린 높낮이 차이가 커 보이는 홀. 첫 퍼트 속도만 살리기.",
+        friends: ["여기서 멋진 샷보다 멀쩡한 샷이 더 귀하다.", "클럽 고민 오래 하면 더 틀린다."]
+      },
+      {
+        no: 8, par: 4, white: "확인 예정", mood: "오르막 · 그린 뒤 높음 · 짧은 미스 주의",
+        elevation: "IP +8.2m / 그린 +24m", landing: "오르막 보정 필요, 세컨은 한 클럽 길게",
+        target: "페어웨이 중앙. 세컨은 짧지 않게 그린 중앙.",
+        danger: "짧은 세컨, 앞쪽 경사",
+        safe: "한 클럽 길게, 중앙 공략",
+        green: "상단이 높은 그린. 핀보다 앞에 세우면 퍼트가 남고, 너무 짧으면 고생.",
+        friends: ["오르막은 체력도 스코어도 같이 올라간다.", "짧으면 착한 샷이 아니라 다음 고생 예약."]
+      },
+      {
+        no: 9, par: 4, white: "확인 예정", mood: "마무리 오르막 · 좌우 벙커 · 집중력",
+        elevation: "IP +0.7m / 그린 +6.7m", landing: "완만한 오르막, 마지막까지 방향성 우선",
+        target: "중앙 라인. 벙커를 피하고 그린 앞 공간 확인.",
+        danger: "페어웨이 벙커, 마지막 홀 욕심",
+        safe: "중앙 랜딩, 그린 중앙",
+        green: "큰 경사보다 속도감 관리. 마지막 퍼트는 과감하지만 짧지 않게.",
+        friends: ["마지막 홀에서 갑자기 프로 되는 사람 아직 못 봤다.", "스코어 정리는 저녁에, 지금은 한 번만 더 가운데."]
+      }
+    ];
+
+    const genericHoleThemes = [
+      "출발 홀 · 티샷 리듬 만들기", "방향성 홀 · 페어웨이 우선", "그린 중앙 공략",
+      "긴 홀 · 끊어가기", "파3 · 거리감 확인", "위험 구역 회피",
+      "후반 집중 · 루틴 유지", "스코어 방어", "마무리 · 욕심 금지"
+    ];
+
+    const slides = [
+      { type: "opening" },
+      { type: "itinerary" },
+      ...["Pine", "Maple", "Oak", "Cherry"].flatMap(course => ([
+        { type: "course", course },
+        ...Array.from({ length: 9 }, (_, index) => ({ type: course === "Oak" ? "oakHole" : "genericHole", course, hole: index + 1 }))
+      ])),
+      { type: "ending" }
+    ];
+
+    const deck = document.getElementById("deck");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const currentChip = document.getElementById("currentChip");
+    let current = 0;
+    const tabs = new Map();
+
+    function openingSlide() {
+      return `
+        <article class="slide">
+          <div class="hero">
+            <div class="hero-card">
+              <div class="hero-content">
+                <div class="cover-title">
+                  <p class="eyebrow">Oak Valley CC Friends Tour</p>
+                  <h1>김장채권 골프여행</h1>
+                  <strong>오크밸리CC<br>2026.6.4 ~ 6.5</strong>
+                </div>
+
+                <div class="cover-photo-slot" aria-label="모임 참석 이미지 자리">
+                  <div>
+                    <b>모임 참석 이미지</b>
+                    <span>단체사진, 멤버 일러스트, 여행 대표 이미지를 넣을 공간</span>
+                  </div>
+                </div>
+
+                <div class="cover-schedule">
+                  <div class="cover-row"><b>6.4</b><span>파인 코스 · 메이플 코스</span></div>
+                  <div class="cover-row"><b>6.5</b><span>오크 코스 · 체리 코스</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="small-note">좌우로 넘기거나 아래 버튼을 눌러 홀을 이동하세요.</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function itinerarySlide() {
+      return `
+        <article class="slide">
+          ${topbar("SCHEDULE")}
+          <div class="hero">
+            <div class="hero-card">
+              <div class="hero-content">
+                <p class="eyebrow">2 Days · 4 Courses · 36 Holes</p>
+                <h1>파인·메이플<br>오크·체리</h1>
+                <p class="hero-copy">6월 4일은 파인과 메이플, 6월 5일은 오크와 체리. 이 앱은 스코어 입력 없이 코스 브리핑과 홀별 참고 카드만 빠르게 넘겨보는 투어북이야.</p>
+                <div class="promise-grid">
+                  ${itinerary.map(day => `<div class="promise"><span class="number-mark">${day.date.replace("6월 ","").replace("일","")}</span><span>${day.date} · ${day.courses.map(c => courseInfo[c].ko).join(" → ")} · ${day.note}</span></div>`).join("")}
+                </div>
+                <div class="course-actions">
+                  ${Object.keys(courseInfo).map(course => `<button class="course-btn" type="button" data-course="${course}">${courseInfo[course].ko} 코스 바로가기</button>`).join("")}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function topbar(active) {
+      return `
+        <div class="topbar">
+          <div class="course-title">
+            <div>
+              <div class="brand-line">
+                <button class="icon-btn" type="button" data-home="cover" aria-label="표지로 이동" title="표지">⌂</button>
+                <button class="icon-btn" type="button" data-home="schedule" aria-label="일정으로 이동" title="일정">≡</button>
+                <small>Oak Valley CC</small>
+              </div>
+            </div>
+            <span class="pill">${active}</span>
+          </div>
+          <div class="course-actions">
+            ${Object.keys(courseInfo).map(course => `<button class="course-btn" type="button" data-course="${course}">${courseInfo[course].ko}</button>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function courseSlide(course) {
+      const info = courseInfo[course];
+      return `
+        <article class="slide">
+          ${topbar(info.ko)}
+          <section class="hole-head">
+            <div class="hole-main">
+              <div>
+                <p class="hole-kicker">${info.day}</p>
+                <h2 class="hole-title">${info.ko} 코스</h2>
+              </div>
+              <span class="pill">난이도 ${info.difficulty}</span>
+            </div>
+            <div class="meta-row">
+              ${info.theme.split(" · ").map(item => `<span class="pill">${item}</span>`).join("")}
+            </div>
+          </section>
+
+          <section class="quick-card">
+            <p class="quick-label">코스 브리핑</p>
+            <p class="quick-text">${info.play}</p>
+          </section>
+
+          <section class="course-brief">
+            <div class="brief-grid">
+              <div class="brief-box"><b>코스 성격</b><span>${info.style}</span></div>
+              <div class="brief-box"><b>주의점</b><span>${info.watch}</span></div>
+              <div class="brief-box"><b>운영 원칙</b><span>페어웨이 우선, 그린 중앙, 더블 보기 방지.</span></div>
+              <div class="brief-box"><b>현재 데이터</b><span>${info.note}</span></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h3>${info.ko} 9홀 체크리스트</h3>
+              <span class="pill">탭해서 이동</span>
+            </div>
+            <div class="hole-grid">
+              ${genericHoleThemes.map((theme, index) => `<button class="hole-mini" type="button" data-course-hole="${course}:${index + 1}"><b>H${index + 1}</b><span>${course === "Oak" ? oakHoles[index].mood : theme}</span></button>`).join("")}
+            </div>
+          </section>
+        </article>
+      `;
+    }
+
+    function oakHoleSlide(hole) {
+      const n = String(hole.no).padStart(2, "0");
+      const activeTab = tabs.get(`Oak-${hole.no}`) || (hole.summaryImage ? "summary" : "course");
+      const img = {
+        summary: hole.summaryImage || `${ASSET}course_${n}.png`,
+        course: `${ASSET}course_${n}.png`,
+        slope: `${ASSET}slope_${n}.png`,
+        green: `${ASSET}green_${n}.jpg`
+      }[activeTab];
+      const caption = {
+        summary: hole.summaryImage ? "종합 야디지 이미지" : "종합 이미지 준비 전 · 코스 이미지 대체",
+        course: "코스 전체 흐름",
+        slope: hole.elevation,
+        green: "그린 경사 참고 이미지"
+      }[activeTab];
+
+      return `
+        <article class="slide">
+          ${topbar(`OAK H${hole.no}`)}
+          <section class="hole-head">
+            <div class="hole-main">
+              <div>
+                <p class="hole-kicker">HOLE ${hole.no}</p>
+                <h2 class="hole-title">PAR ${hole.par}</h2>
+              </div>
+              <span class="pill">WHITE ${hole.white}</span>
+            </div>
+            <div class="meta-row">
+              ${hole.mood.split(" · ").map(item => `<span class="pill">${item}</span>`).join("")}
+            </div>
+          </section>
+
+          <section class="quick-card">
+            <p class="quick-label">오늘의 공략</p>
+            <p class="quick-text">${hole.target}</p>
+            <div class="danger-row">
+              <div class="danger">
+                <span class="box-label">절대 금지</span>
+                <p class="box-value">${hole.danger}</p>
+              </div>
+              <div class="safe">
+                <span class="box-label">안전 선택</span>
+                <p class="box-value">${hole.safe}</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="media-tabs" role="tablist" aria-label="이미지 종류">
+            <button class="tab ${activeTab === "summary" ? "active" : ""}" type="button" data-tab="${hole.no}:summary">종합</button>
+            <button class="tab ${activeTab === "course" ? "active" : ""}" type="button" data-tab="${hole.no}:course">코스</button>
+            <button class="tab ${activeTab === "slope" ? "active" : ""}" type="button" data-tab="${hole.no}:slope">경사</button>
+            <button class="tab ${activeTab === "green" ? "active" : ""}" type="button" data-tab="${hole.no}:green">그린</button>
+          </div>
+          <figure class="image-panel">
+            <img src="${img}" alt="오크코스 ${hole.no}번홀 ${caption}" loading="lazy">
+            <figcaption class="image-caption">${caption}</figcaption>
+          </figure>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h3>공략 메모</h3>
+              <span class="pill">${hole.landing}</span>
+            </div>
+            <div class="tips">
+              <div class="tip"><b>티샷</b><span>${hole.target}</span></div>
+              <div class="tip"><b>고도</b><span>${hole.elevation}. 클럽 선택은 평지 거리보다 보수적으로.</span></div>
+              <div class="tip"><b>그린</b><span>${hole.green}</span></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h3>친구 전용 멘트</h3>
+              <span class="pill">보기면 충분</span>
+            </div>
+            <div class="friends">
+              ${hole.friends.map((text, idx) => `<div class="friend"><b>${idx === 0 ? "카트 안 조언" : "오늘의 한마디"}</b><span>${text}</span></div>`).join("")}
+            </div>
+          </section>
+        </article>
+      `;
+    }
+
+    function genericHoleSlide(course, holeNo) {
+      const info = courseInfo[course];
+      const theme = genericHoleThemes[holeNo - 1];
+      return `
+        <article class="slide">
+          ${topbar(`${info.ko} H${holeNo}`)}
+          <section class="hole-head">
+            <div class="hole-main">
+              <div>
+                <p class="hole-kicker">${info.ko} COURSE</p>
+                <h2 class="hole-title">HOLE ${holeNo}</h2>
+              </div>
+              <span class="pill">정보 보강 예정</span>
+            </div>
+            <div class="meta-row">
+              <span class="pill">${theme}</span>
+              <span class="pill">입력 없음</span>
+            </div>
+          </section>
+
+          <section class="quick-card">
+            <p class="quick-label">기본 공략</p>
+            <p class="quick-text">${info.play}</p>
+            <div class="danger-row">
+              <div class="danger">
+                <span class="box-label">주의</span>
+                <p class="box-value">${info.watch}</p>
+              </div>
+              <div class="safe">
+                <span class="box-label">안전 선택</span>
+                <p class="box-value">티샷은 페어웨이, 세컨은 다음 샷이 편한 곳, 그린은 중앙.</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="placeholder-map">
+            <div>
+              <b>${info.ko} ${holeNo}번홀</b>
+              <span>이미지가 추가되면 오크코스처럼 코스도, 경사도, 그린 탭으로 바뀌는 자리야. 지금은 라운드 전 브리핑용 카드로 접근 가능하게 열어뒀어.</span>
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-title">
+              <h3>친구 전용 멘트</h3>
+              <span class="pill">큰 사고 방지</span>
+            </div>
+            <div class="friends">
+              <div class="friend"><b>카트 안 조언</b><span>이 홀은 멋있게보다 멀쩡하게. 다음 샷이 보이면 성공.</span></div>
+              <div class="friend"><b>오늘의 한마디</b><span>스코어는 나중에 세고, 지금은 위험 구역 하나만 확실히 피하자.</span></div>
+            </div>
+          </section>
+        </article>
+      `;
+    }
+
+    function endingSlide() {
+      return `
+        <article class="slide">
+          ${topbar("FINISH")}
+          <div class="ending">
+            <div class="hero-card">
+              <div class="hero-content">
+                <p class="eyebrow">Round Complete</p>
+                <h1>오늘의 승자는<br>끝까지 웃은 사람</h1>
+                <p class="hero-copy">스코어는 잠깐이고, 이 여행은 오래 간다. 나중에 사진과 결과를 더해 완성판으로 보내면 진짜 기념품이 된다.</p>
+                <div class="promise-grid">
+                  <div class="promise"><span class="number-mark">A</span><span>베스트 샷은 기억하고</span></div>
+                  <div class="promise"><span class="number-mark">B</span><span>최악의 샷은 더 오래 기억하고</span></div>
+                  <div class="promise"><span class="number-mark">C</span><span>저녁에는 모두가 싱글</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="small-note">오크밸리 CC · 김장채권 골프여행 프로토타입</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function slideHtml(slide) {
+      if (slide.type === "opening") return openingSlide();
+      if (slide.type === "itinerary") return itinerarySlide();
+      if (slide.type === "course") return courseSlide(slide.course);
+      if (slide.type === "oakHole") return oakHoleSlide(oakHoles[slide.hole - 1]);
+      if (slide.type === "genericHole") return genericHoleSlide(slide.course, slide.hole);
+      return endingSlide();
+    }
+
+    function findCourseIndex(course) {
+      return slides.findIndex(slide => slide.type === "course" && slide.course === course);
+    }
+
+    function findCourseHoleIndex(course, hole) {
+      return slides.findIndex(slide => (slide.type === "oakHole" || slide.type === "genericHole") && slide.course === course && slide.hole === hole);
+    }
+
+    function render() {
+      deck.innerHTML = slides.map(slideHtml).join("");
+      deck.style.transform = `translateX(${-current * 100}%)`;
+      const active = slides[current];
+      currentChip.textContent = active.type === "opening" ? "OPENING" : active.type === "ending" ? "FINISH" : active.type === "itinerary" ? "SCHEDULE" : active.type === "course" ? `${courseInfo[active.course].ko} COURSE` : `${courseInfo[active.course].ko} H${active.hole}`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      document.querySelectorAll("[data-jump]").forEach(btn => {
+        btn.addEventListener("click", () => go(Number(btn.dataset.jump)));
+      });
+      document.querySelectorAll("[data-course]").forEach(btn => {
+        btn.addEventListener("click", () => go(findCourseIndex(btn.dataset.course)));
+      });
+      document.querySelectorAll("[data-home]").forEach(btn => {
+        btn.addEventListener("click", () => go(btn.dataset.home === "cover" ? 0 : 1));
+      });
+      document.querySelectorAll("[data-course-hole]").forEach(btn => {
+        const [course, hole] = btn.dataset.courseHole.split(":");
+        btn.addEventListener("click", () => go(findCourseHoleIndex(course, Number(hole))));
+      });
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const [holeNo, tab] = btn.dataset.tab.split(":");
+          tabs.set(`Oak-${holeNo}`, tab);
+          render();
+        });
+      });
+    }
+
+    function go(next) {
+      current = Math.max(0, Math.min(slides.length - 1, next));
+      render();
+    }
+
+    prevBtn.addEventListener("click", () => go(current - 1));
+    nextBtn.addEventListener("click", () => go(current + 1));
+
+    let startX = 0;
+    let startY = 0;
+    deck.addEventListener("touchstart", event => {
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive: true });
+
+    deck.addEventListener("touchend", event => {
+      const dx = event.changedTouches[0].clientX - startX;
+      const dy = event.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) > 54 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        go(current + (dx < 0 ? 1 : -1));
+      }
+    }, { passive: true });
+
+    window.addEventListener("keydown", event => {
+      if (event.key === "ArrowLeft") go(current - 1);
+      if (event.key === "ArrowRight") go(current + 1);
+    });
+
+    render();
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
