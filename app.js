@@ -1,4 +1,4 @@
-const deck = document.getElementById("deck");
+﻿const deck = document.getElementById("deck");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const currentChip = document.getElementById("currentChip");
@@ -90,6 +90,16 @@ function holeByNumber(course, holeNo) {
   return (course.holesData || []).find(hole => hole.no === holeNo);
 }
 
+function coursePrincipleText(course) {
+  const principles = course.principles || course.operatingPrinciples || course.strategyPrinciples;
+  if (Array.isArray(principles) && principles.length) {
+    return principles.join(", ");
+  }
+  if (typeof principles === "string" && principles.trim()) {
+    return principles;
+  }
+  return "페어웨이 우선, 그린 중앙, 더블 보기 방지.";
+}
 function holeMessages(holeId) {
   return app.overlay?.holeMessages?.[holeId] || [
     { label: "카트 안 조언", text: "이 홀은 멋있게보다 멀쩡하게. 다음 샷이 보이면 성공." },
@@ -153,15 +163,20 @@ function openingSlide() {
 }
 
 function itinerarySlide() {
+  const schedule = app.trip.schedule || {};
+  const fallbackTitle = app.trip.rounds.map(round => round.label.replace(" 코스", "")).join("·");
+  const eyebrow = schedule.eyebrow || `${scheduleRows().length} Days · ${app.trip.rounds.length} Courses`;
+  const title = schedule.title || fallbackTitle;
+  const copy = schedule.copy || "이 앱은 스코어 입력 없이 코스 브리핑과 홀별 참고 카드만 빠르게 넘겨보는 투어북이야.";
   return `
     <article class="slide">
       ${topbar("SCHEDULE")}
       <div class="hero">
         <div class="hero-card">
           <div class="hero-content">
-            <p class="eyebrow">2 Days · 4 Courses · 36 Holes</p>
-            <h1>${escapeHtml(app.trip.rounds.map(round => round.label.replace(" 코스", "")).join("·"))}</h1>
-            <p class="hero-copy">이 앱은 스코어 입력 없이 코스 브리핑과 홀별 참고 카드만 빠르게 넘겨보는 투어북이야.</p>
+            <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+            <h1>${escapeHtml(title)}</h1>
+            <p class="hero-copy">${escapeHtml(copy)}</p>
             <div class="promise-grid">
               ${scheduleRows().map(row => `<div class="promise"><span class="number-mark">${escapeHtml(row.date.replace(".", ""))}</span><span>${escapeHtml(row.date)} · ${escapeHtml(row.labels.join(" → "))} · ${escapeHtml(row.notes.join(" / "))}</span></div>`).join("")}
             </div>
@@ -218,7 +233,7 @@ function courseSlide(courseKey) {
         <div class="brief-grid">
           <div class="brief-box"><b>코스 성격</b><span>${escapeHtml(info.style)}</span></div>
           <div class="brief-box"><b>주의점</b><span>${escapeHtml(info.watch)}</span></div>
-          <div class="brief-box"><b>운영 원칙</b><span>페어웨이 우선, 그린 중앙, 더블 보기 방지.</span></div>
+          <div class="brief-box"><b>운영 원칙</b><span>${escapeHtml(coursePrincipleText(info))}</span></div>
           <div class="brief-box"><b>현재 데이터</b><span>${escapeHtml(info.note)}</span></div>
         </div>
       </section>

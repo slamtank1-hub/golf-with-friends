@@ -1,6 +1,7 @@
 ﻿param(
-  [string]$CommitMessage = "Update Oak Valley trip UI and images",
-  [switch]$DryRun
+  [string]$CommitMessage = "Update golf trip app data and assets",
+  [switch]$DryRun,
+  [switch]$NoPush
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,10 +15,28 @@ function Run-Git {
   }
 }
 
+function Find-Node {
+  $candidates = @(
+    (Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"),
+    "node"
+  )
+
+  foreach ($candidate in $candidates) {
+    if ($candidate -eq "node") {
+      $cmd = Get-Command node -ErrorAction SilentlyContinue
+      if ($cmd) { return $cmd.Source }
+    } elseif (Test-Path -LiteralPath $candidate) {
+      return $candidate
+    }
+  }
+
+  return $null
+}
+
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-if (-not (Test-Path ".git")) {
+if (-not (Test-Path -LiteralPath ".git")) {
   throw "This folder is not a Git repository: $repoRoot"
 }
 
@@ -31,96 +50,79 @@ Write-Host "Remote: $origin"
 Write-Host ""
 Write-Host "Checking JavaScript syntax..."
 
-$nodeCandidates = @(
-  (Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"),
-  "node"
-)
-$nodePath = $null
-foreach ($candidate in $nodeCandidates) {
-  if ($candidate -eq "node") {
-    $cmd = Get-Command node -ErrorAction SilentlyContinue
-    if ($cmd) { $nodePath = $cmd.Source; break }
-  } elseif (Test-Path -LiteralPath $candidate) {
-    $nodePath = $candidate
-    break
-  }
-}
-
+$nodePath = Find-Node
 if ($nodePath) {
-  & $nodePath --check app.js
-  if ($LASTEXITCODE -ne 0) { throw "app.js syntax check failed" }
-  & $nodePath --check data/venues/oakvalley.js
-  if ($LASTEXITCODE -ne 0) { throw "oakvalley.js syntax check failed" }
+  $jsFiles = @("app.js")
+  $jsFiles += Get-ChildItem -LiteralPath "data" -Recurse -Filter "*.js" | ForEach-Object { $_.FullName }
+
+  foreach ($jsFile in $jsFiles) {
+    if (Test-Path -LiteralPath $jsFile) {
+      Write-Host " - $jsFile"
+      & $nodePath --check $jsFile
+      if ($LASTEXITCODE -ne 0) { throw "JavaScript syntax check failed: $jsFile" }
+    }
+  }
 } else {
   Write-Host "Node.js was not found; skipping syntax check."
 }
 
-$paths = @(
+$stageTargets = @(
   "app.js",
   "index.html",
-  "data/groups/kimjang-bond.js",
-  "data/groups/kimjan-bond_titie.png",
-  "data/venues/oakvalley.js",
-  "scripts/publish-to-github.ps1",
-  "assets/oakvalley/fine/pinesummary_hole1.png",
-  "assets/oakvalley/fine/pinesummary_hole2.png",
-  "assets/oakvalley/fine/pinesummary_hole3.png",
-  "assets/oakvalley/fine/pinesummary_hole4.png",
-  "assets/oakvalley/fine/pinesummary_hole5.png",
-  "assets/oakvalley/fine/pinesummary_hole6.png",
-  "assets/oakvalley/fine/pinesummary_hole7.png",
-  "assets/oakvalley/fine/pinesummary_hole8.png",
-  "assets/oakvalley/fine/pinesummary_hole9.png",
-  "assets/oakvalley/maple/maplesummary_hole1.png",
-  "assets/oakvalley/maple/maplesummary_hole2.png",
-  "assets/oakvalley/maple/maplesummary_hole3.png",
-  "assets/oakvalley/maple/maplesummary_hole4.png",
-  "assets/oakvalley/maple/maplesummary_hole5.png",
-  "assets/oakvalley/maple/maplesummary_hole6.png",
-  "assets/oakvalley/maple/maplesummary_hole7.png",
-  "assets/oakvalley/maple/maplesummary_hole8.png",
-  "assets/oakvalley/maple/maplesummary_hole9.png",
-  "assets/oakvalley/cherry/cherrysummary_hole1.png",
-  "assets/oakvalley/cherry/cherrysummary_hole2.png",
-  "assets/oakvalley/cherry/cherrysummary_hole3.png",
-  "assets/oakvalley/cherry/cherrysummary_hole4.png",
-  "assets/oakvalley/cherry/cherrysummary_hole5.png",
-  "assets/oakvalley/cherry/cherrysummary_hole6.png",
-  "assets/oakvalley/cherry/cherrysummary_hole7.png",
-  "assets/oakvalley/cherry/cherrysummary_hole8.png",
-  "assets/oakvalley/cherry/cherrysummary_hole9.png"
+  "data/groups",
+  "data/venues",
+  "assets/oakvalley",
+  "assets/century21",
+  "docs",
+  "scripts/publish-to-github.ps1"
 )
 
-$missing = @($paths | Where-Object { -not (Test-Path -LiteralPath $_) })
-if ($missing.Count -gt 0) {
-  throw "These expected files are missing:`n$($missing -join "`n")"
+$existingTargets = @($stageTargets | Where-Object { Test-Path -LiteralPath $_ })
+if ($existingTargets.Count -eq 0) {
+  throw "No stage targets were found. Check the repository layout."
 }
 
 Write-Host ""
-Write-Host "Files to stage:"
-$paths | ForEach-Object { Write-Host " - $_" }
+Write-Host "Staging targets:"
+$existingTargets | ForEach-Object { Write-Host " - $_" }
 
 if ($DryRun) {
   Write-Host ""
-  Write-Host "Dry run only. No commit or push was made."
-  git status --short
+  Write-Host "Dry run only. No commit or push will be made. Current status:"
+  git -c core.quotepath=false status --short
   exit 0
 }
 
-$gitAddArgs = @("add", "--") + $paths
-Run-Git $gitAddArgs
+Run-Git (@("add", "--") + $existingTargets)
 
-$staged = (& git diff --cached --name-only)
-if ([string]::IsNullOrWhiteSpace(($staged -join ""))) {
-  Write-Host "Nothing staged. No commit needed."
-  exit 0
+# Local server logs are generated while testing and should not be published.
+$logFiles = @(
+  "server-8765.err.log",
+  "server-8765.out.log",
+  "server.err.txt",
+  "server.out.txt"
+)
+$existingLogs = @($logFiles | Where-Object { Test-Path -LiteralPath $_ })
+if ($existingLogs.Count -gt 0) {
+  & git reset -- @existingLogs | Out-Null
 }
 
 Write-Host ""
 Write-Host "Staged files:"
+$staged = @(& git -c core.quotepath=false diff --cached --name-only)
+if ($staged.Count -eq 0 -or [string]::IsNullOrWhiteSpace(($staged -join ""))) {
+  Write-Host "Nothing staged. No commit needed."
+  exit 0
+}
 $staged | ForEach-Object { Write-Host " - $_" }
 
 Run-Git @("commit", "-m", $CommitMessage)
+
+if ($NoPush) {
+  Write-Host ""
+  Write-Host "Commit created. Push skipped because -NoPush was used."
+  exit 0
+}
 
 $branch = (& git branch --show-current).Trim()
 if ([string]::IsNullOrWhiteSpace($branch)) {
@@ -131,8 +133,3 @@ Run-Git @("push", "-u", "origin", $branch)
 
 Write-Host ""
 Write-Host "Done. Changes were pushed to origin/$branch."
-
-
-
-
-
