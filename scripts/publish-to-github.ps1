@@ -67,6 +67,7 @@ if ($nodePath) {
 }
 
 $stageTargets = @(
+  ".gitignore",
   "app.js",
   "index.html",
   "data/groups",
@@ -74,6 +75,8 @@ $stageTargets = @(
   "assets/oakvalley",
   "assets/century21",
   "docs",
+  "open-project-folder.bat",
+  "publish-to-github.bat",
   "scripts/publish-to-github.ps1"
 )
 

@@ -86,6 +86,9 @@ function roundByCourse(courseKey) {
   return app.trip.rounds.find(round => round.courseKey === courseKey);
 }
 
+function holeFeature(hole, fallback = "홀 정보") {
+  return hole?.feature || hole?.mood || fallback;
+}
 function holeByNumber(course, holeNo) {
   return (course.holesData || []).find(hole => hole.no === holeNo);
 }
@@ -234,7 +237,7 @@ function courseSlide(courseKey) {
           <div class="brief-box"><b>코스 성격</b><span>${escapeHtml(info.style)}</span></div>
           <div class="brief-box"><b>주의점</b><span>${escapeHtml(info.watch)}</span></div>
           <div class="brief-box"><b>운영 원칙</b><span>${escapeHtml(coursePrincipleText(info))}</span></div>
-          <div class="brief-box"><b>현재 데이터</b><span>${escapeHtml(info.note)}</span></div>
+          <div class="brief-box"><b>Note</b><span>${escapeHtml(info.note)}</span></div>
         </div>
       </section>
 
@@ -246,8 +249,9 @@ function courseSlide(courseKey) {
         <div class="hole-grid">
           ${Array.from({ length: info.holes || 9 }, (_, index) => {
             const hole = holeByNumber(info, index + 1);
-            const theme = hole?.mood || genericHoleThemes[index] || "홀 정보";
-            return `<button class="hole-mini" type="button" data-course-hole="${escapeHtml(courseKey)}:${index + 1}"><b>H${index + 1}</b><span>${escapeHtml(theme)}</span></button>`;
+            const theme = holeFeature(hole, genericHoleThemes[index] || "홀 정보");
+            const parLabel = hole?.par ? `H${index + 1}(Par${hole.par})` : `H${index + 1}`;
+            return `<button class="hole-mini" type="button" data-course-hole="${escapeHtml(courseKey)}:${index + 1}"><b>${escapeHtml(parLabel)}</b><span>${escapeHtml(theme)}</span></button>`;
           }).join("")}
         </div>
       </section>
@@ -264,27 +268,11 @@ function assetHoleSlide(courseKey, hole) {
     slope: hole.assets.slope,
     green: hole.assets.green
   }[activeTab];
-  const caption = {
-    summary: hole.summaryImage ? "종합 야디지 이미지" : "종합 이미지 준비 전 · 코스 이미지 대체",
-    course: "코스 전체 흐름",
-    slope: hole.elevation,
-    green: "그린 경사 참고 이미지"
-  }[activeTab];
   const messages = holeMessages(hole.id);
 
   return `
     <article class="slide">
       ${topbar(`${course.name} H${hole.no}`)}
-      <section class="hole-head">
-        <div class="hole-main">
-          <div>
-            <p class="hole-kicker">${escapeHtml(course.name)} COURSE</p>
-            <h2 class="hole-title">PAR ${escapeHtml(hole.par)}</h2>
-          </div>
-          <span class="pill">WHITE ${escapeHtml(hole.white)}</span>
-        </div>
-      </section>
-
       <div class="media-tabs" role="tablist" aria-label="이미지 종류">
         <button class="tab ${activeTab === "summary" ? "active" : ""}" type="button" data-tab="${hole.id}:summary">종합</button>
         <button class="tab ${activeTab === "course" ? "active" : ""}" type="button" data-tab="${hole.id}:course">코스</button>
@@ -292,20 +280,16 @@ function assetHoleSlide(courseKey, hole) {
         <button class="tab ${activeTab === "green" ? "active" : ""}" type="button" data-tab="${hole.id}:green">그린</button>
       </div>
       <figure class="image-panel ${activeTab === "summary" ? "summary" : ""}" data-full-image="${escapeHtml(img)}">
-        <img src="${escapeHtml(img)}" alt="${escapeHtml(course.name)}코스 ${hole.no}번홀 ${caption}" loading="lazy">
-        <figcaption class="image-caption">${escapeHtml(caption)}</figcaption>
+        <img src="${escapeHtml(img)}" alt="${escapeHtml(course.name)}코스 ${hole.no}번홀 이미지" loading="lazy">
       </figure>
 
       <section class="panel">
         <div class="panel-title">
           <h3>공략 메모</h3>
-          <span class="pill">${escapeHtml(hole.landing)}</span>
+          <span class="pill">${escapeHtml(holeFeature(hole))}</span>
         </div>
         <div class="tips">
-          <div class="tip"><b>티샷</b><span>${escapeHtml(hole.target)}</span></div>
-          <div class="tip"><b>주의</b><span>${escapeHtml(hole.danger)}</span></div>
-          <div class="tip"><b>안전</b><span>${escapeHtml(hole.safe)}</span></div>
-          <div class="tip"><b>고도</b><span>${escapeHtml(hole.elevation)}. 클럽 선택은 평지 거리보다 보수적으로.</span></div>
+          <div class="tip"><b>티/세컨</b><span>${escapeHtml(hole.target)}</span></div>
           <div class="tip"><b>그린</b><span>${escapeHtml(hole.green)}</span></div>
         </div>
       </section>
@@ -347,9 +331,8 @@ function genericHoleSlide(courseKey, holeNo) {
           <h3>공략 메모</h3>
         </div>
         <div class="tips">
-          <div class="tip"><b>운영</b><span>${escapeHtml(info.play)}</span></div>
-          <div class="tip"><b>주의</b><span>${escapeHtml(info.watch)}</span></div>
-          <div class="tip"><b>안전</b><span>티샷은 페어웨이, 세컨은 다음 샷이 편한 곳, 그린은 중앙.</span></div>
+          <div class="tip"><b>티/세컨</b><span>${escapeHtml(hole?.target || info.play)}</span></div>
+          <div class="tip"><b>그린</b><span>${escapeHtml(hole?.green || "핀보다 그린 중앙, 첫 퍼트 거리감 우선.")}</span></div>
         </div>
       </section>
 
