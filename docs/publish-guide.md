@@ -21,3 +21,9 @@ This project publishes to `slamtank1-hub/golf-with-friends`. If Git does not hav
 ```text
 slamtank1-hub <slamtank1-hub@users.noreply.github.com>
 ```
+
+KakaoTalk/share preview link for Kwon Family:
+
+```text
+https://slamtank1-hub.github.io/golf-with-friends/kwon-family-hwasung-sangnok.html
+```

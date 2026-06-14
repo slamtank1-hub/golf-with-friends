@@ -118,6 +118,7 @@ $stageTargets = @(
   ".gitignore",
   "app.js",
   "index.html",
+  "kwon-family-hwasung-sangnok.html",
   "data/groups",
   "data/venues",
   "assets/oakvalley",
