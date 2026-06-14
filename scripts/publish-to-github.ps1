@@ -1,5 +1,7 @@
 ﻿param(
   [string]$CommitMessage = "Update golf trip app data and assets",
+  [string]$GitUserName,
+  [string]$GitUserEmail,
   [switch]$DryRun,
   [switch]$NoPush
 )
@@ -7,9 +9,11 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+$ExpectedRepository = "slamtank1-hub/golf-with-friends"
+
 function Run-Git {
   param([string[]]$GitArgs)
-  & git @GitArgs
+  & git @script:GitCommonArgs @GitArgs
   if ($LASTEXITCODE -ne 0) {
     throw "git $($GitArgs -join ' ') failed with exit code $LASTEXITCODE"
   }
@@ -33,20 +37,64 @@ function Find-Node {
   return $null
 }
 
+function Get-GitHubOwnerFromRemote {
+  param([string]$RemoteUrl)
+
+  if ($RemoteUrl -match "github\.com[:/](?<owner>[^/]+)/") {
+    return $Matches.owner
+  }
+
+  return $null
+}
+
+function Ensure-GitIdentity {
+  param([string]$OriginUrl)
+
+  $currentName = (& git @script:GitCommonArgs config --get user.name 2>$null)
+  $currentEmail = (& git @script:GitCommonArgs config --get user.email 2>$null)
+
+  if (-not [string]::IsNullOrWhiteSpace($currentName) -and -not [string]::IsNullOrWhiteSpace($currentEmail)) {
+    Write-Host "Git author: $currentName <$currentEmail>"
+    return
+  }
+
+  $owner = Get-GitHubOwnerFromRemote -RemoteUrl $OriginUrl
+  if ([string]::IsNullOrWhiteSpace($GitUserName)) {
+    $GitUserName = if ($owner) { $owner } else { $env:USERNAME }
+  }
+  if ([string]::IsNullOrWhiteSpace($GitUserEmail)) {
+    $GitUserEmail = if ($owner) { "$owner@users.noreply.github.com" } else { "$env:USERNAME@users.noreply.github.com" }
+  }
+
+  $script:GitCommonArgs += @("-c", "user.name=$GitUserName", "-c", "user.email=$GitUserEmail")
+  Write-Host "Git author for this run: $GitUserName <$GitUserEmail>"
+}
+
+function Assert-ExpectedRemote {
+  param([string]$OriginUrl)
+
+  if ($OriginUrl -notmatch "github\.com[:/]slamtank1-hub/golf-with-friends(\.git)?$") {
+    throw "Git remote 'origin' must point to $ExpectedRepository, but is currently: $OriginUrl"
+  }
+}
+
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
+$script:GitCommonArgs = @("-c", "safe.directory=$repoRoot")
 
 if (-not (Test-Path -LiteralPath ".git")) {
   throw "This folder is not a Git repository: $repoRoot"
 }
 
-$origin = (& git remote get-url origin 2>$null)
+$origin = (& git @script:GitCommonArgs remote get-url origin 2>$null)
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($origin)) {
   throw "Git remote 'origin' is not configured. Add it first, then rerun this script."
 }
+Assert-ExpectedRemote -OriginUrl $origin
 
 Write-Host "Repository: $repoRoot"
 Write-Host "Remote: $origin"
+Ensure-GitIdentity -OriginUrl $origin
 Write-Host ""
 Write-Host "Checking JavaScript syntax..."
 
@@ -74,6 +122,7 @@ $stageTargets = @(
   "data/venues",
   "assets/oakvalley",
   "assets/century21",
+  "assets/hwasung-sangnok",
   "docs",
   "open-project-folder.bat",
   "publish-to-github.bat",
@@ -92,7 +141,7 @@ $existingTargets | ForEach-Object { Write-Host " - $_" }
 if ($DryRun) {
   Write-Host ""
   Write-Host "Dry run only. No commit or push will be made. Current status:"
-  git -c core.quotepath=false status --short
+  git @script:GitCommonArgs -c core.quotepath=false status --short
   exit 0
 }
 
@@ -107,12 +156,12 @@ $logFiles = @(
 )
 $existingLogs = @($logFiles | Where-Object { Test-Path -LiteralPath $_ })
 if ($existingLogs.Count -gt 0) {
-  & git reset -- @existingLogs | Out-Null
+  & git @script:GitCommonArgs reset -- @existingLogs | Out-Null
 }
 
 Write-Host ""
 Write-Host "Staged files:"
-$staged = @(& git -c core.quotepath=false diff --cached --name-only)
+$staged = @(& git @script:GitCommonArgs -c core.quotepath=false diff --cached --name-only)
 if ($staged.Count -eq 0 -or [string]::IsNullOrWhiteSpace(($staged -join ""))) {
   Write-Host "Nothing staged. No commit needed."
   exit 0
@@ -127,7 +176,7 @@ if ($NoPush) {
   exit 0
 }
 
-$branch = (& git branch --show-current).Trim()
+$branch = (& git @script:GitCommonArgs branch --show-current).Trim()
 if ([string]::IsNullOrWhiteSpace($branch)) {
   throw "Could not determine current Git branch."
 }

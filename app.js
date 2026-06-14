@@ -148,7 +148,7 @@ function openingSlide() {
               <div class="cover-photo-slot" aria-label="모임 참석 이미지 자리">
                 <div>
                   <b>${escapeHtml(cover.imageSlotLabel || "모임 참석 이미지")}</b>
-                  <span>단체사진, 멤버 일러스트, 여행 대표 이미지를 넣을 공간</span>
+                  <span>${escapeHtml(app.trip.dateRange.display)} 라운드 브리핑</span>
                 </div>
               </div>
             `}
@@ -261,23 +261,22 @@ function courseSlide(courseKey) {
 
 function assetHoleSlide(courseKey, hole) {
   const course = courseByKey(courseKey);
-  const activeTab = tabs.get(hole.id) || (hole.summaryImage ? "summary" : "course");
-  const img = {
-    summary: hole.summaryImage || hole.assets.course,
-    course: hole.assets.course,
-    slope: hole.assets.slope,
-    green: hole.assets.green
-  }[activeTab];
+  const media = [
+    { key: "summary", label: "종합", src: hole.summaryImage },
+    { key: "course", label: "코스", src: hole.assets?.course },
+    { key: "slope", label: "경사", src: hole.assets?.slope },
+    { key: "green", label: "그린", src: hole.assets?.green }
+  ].filter(item => item.src);
+  const savedTab = tabs.get(hole.id);
+  const activeTab = media.some(item => item.key === savedTab) ? savedTab : media[0]?.key;
+  const img = media.find(item => item.key === activeTab)?.src || "";
   const messages = holeMessages(hole.id);
 
   return `
     <article class="slide">
       ${topbar(`${course.name} H${hole.no}`)}
       <div class="media-tabs" role="tablist" aria-label="이미지 종류">
-        <button class="tab ${activeTab === "summary" ? "active" : ""}" type="button" data-tab="${hole.id}:summary">종합</button>
-        <button class="tab ${activeTab === "course" ? "active" : ""}" type="button" data-tab="${hole.id}:course">코스</button>
-        <button class="tab ${activeTab === "slope" ? "active" : ""}" type="button" data-tab="${hole.id}:slope">경사</button>
-        <button class="tab ${activeTab === "green" ? "active" : ""}" type="button" data-tab="${hole.id}:green">그린</button>
+        ${media.map(item => `<button class="tab ${activeTab === item.key ? "active" : ""}" type="button" data-tab="${hole.id}:${item.key}">${item.label}</button>`).join("")}
       </div>
       <figure class="image-panel ${activeTab === "summary" ? "summary" : ""}" data-full-image="${escapeHtml(img)}">
         <img src="${escapeHtml(img)}" alt="${escapeHtml(course.name)}코스 ${hole.no}번홀 이미지" loading="lazy">
@@ -308,7 +307,8 @@ function assetHoleSlide(courseKey, hole) {
 
 function genericHoleSlide(courseKey, holeNo) {
   const info = courseByKey(courseKey);
-  const theme = genericHoleThemes[holeNo - 1];
+  const hole = holeByNumber(info, holeNo);
+  const theme = holeFeature(hole, genericHoleThemes[holeNo - 1]);
   return `
     <article class="slide">
       ${topbar(`${info.name} H${holeNo}`)}
@@ -322,9 +322,16 @@ function genericHoleSlide(courseKey, holeNo) {
         </div>
         <div class="meta-row">
           <span class="pill">${escapeHtml(theme)}</span>
-          <span class="pill">입력 없음</span>
+          <span class="pill">기본 브리핑</span>
         </div>
       </section>
+
+      <div class="placeholder-map">
+        <div>
+          <b>${escapeHtml(info.name)} ${holeNo}번홀</b>
+          <span>홀별 핵심 공략을 빠르게 확인하는 브리핑 카드입니다.</span>
+        </div>
+      </div>
 
       <section class="panel">
         <div class="panel-title">
@@ -335,13 +342,6 @@ function genericHoleSlide(courseKey, holeNo) {
           <div class="tip"><b>그린</b><span>${escapeHtml(hole?.green || "핀보다 그린 중앙, 첫 퍼트 거리감 우선.")}</span></div>
         </div>
       </section>
-
-      <div class="placeholder-map">
-        <div>
-          <b>${escapeHtml(info.name)} ${holeNo}번홀</b>
-          <span>이미지가 추가되면 오크코스처럼 코스도, 경사도, 그린 탭으로 바뀌는 자리야. 지금은 라운드 전 브리핑용 카드로 접근 가능하게 열어뒀어.</span>
-        </div>
-      </div>
 
       <section class="panel">
         <div class="panel-title">
@@ -366,13 +366,13 @@ function endingSlide() {
           <div class="hero-content">
             <p class="eyebrow">Round Complete</p>
             <h1>오늘의 승자는<br>끝까지 웃은 사람</h1>
-            <p class="hero-copy">스코어는 잠깐이고, 이 여행은 오래 간다. 나중에 사진과 결과를 더해 완성판으로 보내면 진짜 기념품이 된다.</p>
+            <p class="hero-copy">스코어는 잠깐이고, 이 여행은 오래 간다. 오늘의 샷과 웃음까지 오래 기억될 라운드가 된다.</p>
             <div class="promise-grid">
               ${endings.map((text, index) => `<div class="promise"><span class="number-mark">${String.fromCharCode(65 + index)}</span><span>${escapeHtml(text)}</span></div>`).join("")}
             </div>
           </div>
         </div>
-        <p class="small-note">${escapeHtml(app.venue.name)} · ${escapeHtml(app.trip.title)} 프로토타입</p>
+        <p class="small-note">${escapeHtml(app.venue.name)} · ${escapeHtml(app.trip.title)}</p>
       </div>
     </article>
   `;
