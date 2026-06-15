@@ -25,11 +25,11 @@ window.GOLF_GROUPS["kwon-family"] = {
       schedule: {
         eyebrow: "1일 · 2코스 · 화성상록CC",
         title: "화성상록 라운드",
-        copy: "권씨 성을 가진 네 명이 함께하는 오전 라운드. 서코스에서 리듬을 만들고 남코스에서는 방향성과 그린 중앙 공략으로 안정적으로 마무리한다."
+        copy: "일모, 진모와 함께 하는 첫 라운드. 서코스에서 리듬을 만들고 남코스에서는 방향성과 그린 중앙 공략으로 안정적으로 마무리한다."
       },
       cover: {
         subtitle: "화성상록CC",
-        image: null,
+        image:  "data/groups/kwon-family.jpg",
         imageSlotLabel: "권패밀리 화성상록CC 라운드북"
       },
       rounds: [
