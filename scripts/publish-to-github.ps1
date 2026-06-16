@@ -119,6 +119,7 @@ $stageTargets = @(
   "app.js",
   "index.html",
   "kwon-family-hwasung-sangnok.html",
+  "doseoban-century21.html",
   "data/groups",
   "data/venues",
   "assets/oakvalley",

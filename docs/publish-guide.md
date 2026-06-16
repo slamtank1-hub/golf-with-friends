@@ -27,3 +27,9 @@ KakaoTalk/share preview link for Kwon Family:
 ```text
 https://slamtank1-hub.github.io/golf-with-friends/kwon-family-hwasung-sangnok.html
 ```
+
+KakaoTalk/share preview link for Doseoban:
+
+```text
+https://slamtank1-hub.github.io/golf-with-friends/doseoban-century21.html
+```
