@@ -24,7 +24,7 @@ window.GOLF_GROUPS.doseoban = {
       },
       cover: {
         subtitle: "센추리21CC",
-        image: "data/groups/doseoban_century21_title.png",
+        image: "data/groups/doseoban.jpg",
         imageSlotLabel: "도서반 센추리21CC 커버 이미지"
       },
       rounds: [
@@ -210,28 +210,28 @@ window.GOLF_GROUPS.doseoban = {
           { text: "파인은 나무 라인에 흔들리지 말고 출발은 페어웨이 중앙." }
         ],
         "century21.pine.02": [
-          { text: "시야가 좁아질수록 목표는 단순해야 한다." }
-        ],
-        "century21.pine.03": [
           { text: "파3는 핀을 보는 순간 어려워진다. 넓은 면을 보자." }
         ],
-        "century21.pine.04": [
+        "century21.pine.03": [
           { text: "긴 홀에서는 다음 샷이 보이는 자리가 최고의 자리다." }
         ],
-        "century21.pine.05": [
+        "century21.pine.04": [
           { text: "벙커를 피하면 파 기회가 남고, 벙커에 가면 이야깃거리가 남는다." }
         ],
+        "century21.pine.05": [
+          { text: "긴 홀일수록 멀리보다 다음 샷이 편한 곳으로." }
+        ],
         "century21.pine.06": [
-          { text: "경사와 런을 생각하고, 짧아도 안전한 쪽으로." }
+          { text: "par 3는 핀을 맞히는 홀이 아니라, 그린에 올리는 홀이다" }
         ],
         "century21.pine.07": [
-          { text: "마지막 코스 후반이다. 힘보다 리듬을 믿자." }
+          { text: "Par 5는 한 번에 끝내는 홀이 아니라, 세 번에 잘 나누는 홀이다." }
         ],
         "century21.pine.08": [
           { text: "세컨은 핀보다 그린 중앙. 마지막까지 같은 원칙이다." }
         ],
         "century21.pine.09": [
-          { text: "마지막 장은 멋지게보다 안전하게. 웃으면서 마무리하자." }
+          { text: "마지막 홀에서 갑자기 프로가 되려 하지 말자." }
         ]
       }
     }
