@@ -114,7 +114,7 @@ window.GOLF_VENUES.century21 = {
       watch: "초반부터 장타 욕심을 줄이고, 계곡/숲 방향 미스를 확실히 피한다. 긴 홀에서는 그린을 바로 노리기보다 보기 방어 루트를 먼저 정한다.",
       play: "페어웨이 중앙, 세컨 각도, 그린 중앙 순서로 단순하게 운영. 4번·6번·8번은 무리한 만회보다 끊어가기가 안전하다.",
       principles: ["페어웨이 중앙", "긴 홀은 보기 방어", "그린 중앙 공략"],
-      note: "Valley는 Regular 기준 3064y, Par 36. 공개 스코어카드 기준 Back / Regular / Ladies 거리 반영.",
+      note: "계곡 지형이라 방향이 흔들리면 바로 스코어가 무너진다. 멀리 치려 하지 말고, 처음부터 페어웨이 중앙만 보고 가자.",
       holesData: buildCenturyHoles("valley", VALLEY_HOLES)
     },
     field: {
@@ -130,7 +130,7 @@ window.GOLF_VENUES.century21 = {
       watch: "열린 홀일수록 힘이 들어가기 쉽다. 무리한 구질 만들기보다 반복 가능한 방향을 고르고, 긴 홀은 안전한 다음 샷 위치를 먼저 본다.",
       play: "티샷 생존, 벙커 회피, 그린 중앙 기준으로 보기 방어. 8번·9번은 파보다 큰 실수 방지가 목표다.",
       principles: ["티샷 생존 우선", "벙커 방향 제거", "긴 홀은 3샷/보기 방어"],
-      note: "Field는 Regular 기준 3017y, Par 36. 공개 스코어카드 기준 Back / Regular / Ladies 거리 반영.",
+      note: "4개 코스 중 가장 편하게 접근할 수 있는 코스다. 그래도 넓어 보인다고 방심하지 말고, 바람과 리듬만 지키자.",
       holesData: buildCenturyHoles("field", FIELD_HOLES)
     },
     lake: {
@@ -146,7 +146,7 @@ window.GOLF_VENUES.century21 = {
       watch: "물과 긴 전장에서 무리한 세컨을 피하고, 3샷 계획을 받아들이는 것이 좋다. 위험 방향을 지우는 에이밍이 먼저다.",
       play: "물 방향을 지우고 페어웨이 중앙, 그린 중앙으로 운영. 짧은 4번 Par 4도 드라이버 욕심보다 위치 선정이 중요하다.",
       principles: ["물 방향 지우기", "긴 홀은 3샷 계획", "그린 중앙과 2퍼트"],
-      note: "Lake는 Regular 기준 3011y, Par 36. 공개 스코어카드 기준 Back / Regular / Ladies 거리 반영.",
+      note: "4개 코스 중 가장 어려운 코스라고 생각하고 시작하자. 물과 긴 홀 앞에서는 마음을 비우고, 3온·2퍼트면 충분하다.",
       holesData: buildCenturyHoles("lake", LAKE_HOLES)
     },
     pine: {
@@ -162,7 +162,7 @@ window.GOLF_VENUES.century21 = {
       watch: "소나무 라인에 시야가 좁아질 수 있어 목표를 페어웨이 중앙으로 단순화한다. 긴 홀에서는 그린을 직접 노리기보다 다음 샷이 보이는 곳을 택한다.",
       play: "무리한 장타보다 다음 샷이 보이는 곳, 그린 중앙, 2퍼트 기준으로 운영. 5번은 파보다 보기 방어가 현실적이다.",
       principles: ["무리한 장타 금지", "다음 샷이 보이는 곳", "그린 중앙과 2퍼트"],
-      note: "Pine은 Regular 기준 2994y, Par 36. 공개 스코어카드 기준 Back / Regular / Ladies 거리 반영.",
+      note: "수목 라인과 긴 홀이 은근히 부담을 주는 마무리 코스다. 마지막까지 무리하지 말고, 다음 샷이 보이는 곳으로 보내자.",
       holesData: buildCenturyHoles("pine", PINE_HOLES)
     }
   }
